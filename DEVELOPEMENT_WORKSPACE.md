@@ -7,4 +7,4 @@
 
 ## Instale o JetBrains PyCharm
 
-`[https://www.jetbrains.com/pycharm/](https://www.jetbrains.com/pycharm/))`
+`[PyCharm](https://www.jetbrains.com/pycharm/)`
