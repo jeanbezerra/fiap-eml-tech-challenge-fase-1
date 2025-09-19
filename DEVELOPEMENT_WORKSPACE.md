@@ -9,17 +9,31 @@ O projeto utiliza o **[uv](https://docs.astral.sh/uv/)** como gerenciador de pac
 
 ### Instalação no Windows (PowerShell)
 
+Execute o comando em seu terminal PowerShell como Administrador.
+
 ```powershell
 powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
 ```
 
-## Instale o UV (Package Manager para Python)
+Após a instalação, verifique a versão:
 
-`powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"`
+```powershell
+uv --version
+```
 
-## Instale o JetBrains PyCharm
+## 2. IDEs Recomendadas
+
+Escolha a IDE ou editor de texto de sua preferência entre as opções abaixo:
+
+PyCharm (JetBrains)
+ – recomendado para projetos complexos em Python.
+
+Visual Studio Code (Microsoft)
+ – leve, extensível e multiplataforma.
 
 - [PyCharm](https://www.jetbrains.com/pycharm/)
 - [Microsoft Visual Code](https://code.visualstudio.com/)
 - [Banco de Dados PostgreSQL](https://www.enterprisedb.com/downloads/postgres-postgresql-downloads)
 - [DBeaver Community](https://dbeaver.io/download/)
+
+## 3. Banco de Dados
