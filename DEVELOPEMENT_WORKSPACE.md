@@ -33,6 +33,32 @@ C:\FIAP\EML\WORKSPACES\workspace-visualcode       # Projetos desenvolvidos no Vi
 C:\FIAP\EML\WORKSPACES\workspace-pycharm          # Projetos desenvolvidos no PyCharm
 ```
 
+Comandos para criação desta estrutura de pastas:
+
+**Windows (PowerShell ou CMD)**
+```powershell
+mkdir C:\FIAP\EML\WORKSPACES\workspace-techchallenger
+mkdir C:\FIAP\EML\WORKSPACES\workspace-visualcode
+mkdir C:\FIAP\EML\WORKSPACES\workspace-pycharm
+```
+
+**Linux**
+
+```sh
+mkdir -p ~/FIAP/EML/WORKSPACES/workspace-techchallenger
+mkdir -p ~/FIAP/EML/WORKSPACES/workspace-visualcode
+mkdir -p ~/FIAP/EML/WORKSPACES/workspace-pycharm
+```
+
+**macOS**
+
+```sh
+mkdir -p ~/FIAP/EML/WORKSPACES/workspace-techchallenger
+mkdir -p ~/FIAP/EML/WORKSPACES/workspace-visualcode
+mkdir -p ~/FIAP/EML/WORKSPACES/workspace-pycharm
+```
+
+
 Essa abordagem garante não apenas organização local, mas também clareza quando novos membros ingressarem no time, tornando a curva de aprendizado e integração mais rápida.
 
 
