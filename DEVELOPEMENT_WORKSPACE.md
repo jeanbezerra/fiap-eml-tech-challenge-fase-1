@@ -35,14 +35,14 @@ C:\FIAP\EML\WORKSPACES\workspace-pycharm          # Projetos desenvolvidos no Py
 
 Comandos para criação desta estrutura de pastas:
 
-**Windows (PowerShell ou CMD)**
+**1.3.1 - Windows (PowerShell ou CMD)**
 ```powershell
 mkdir C:\FIAP\EML\WORKSPACES\workspace-techchallenger
 mkdir C:\FIAP\EML\WORKSPACES\workspace-visualcode
 mkdir C:\FIAP\EML\WORKSPACES\workspace-pycharm
 ```
 
-**Linux**
+**1.3.2 - Linux**
 
 ```sh
 mkdir -p ~/FIAP/EML/WORKSPACES/workspace-techchallenger
@@ -50,7 +50,7 @@ mkdir -p ~/FIAP/EML/WORKSPACES/workspace-visualcode
 mkdir -p ~/FIAP/EML/WORKSPACES/workspace-pycharm
 ```
 
-**macOS**
+**1.3.3 - macOS**
 
 ```sh
 mkdir -p ~/FIAP/EML/WORKSPACES/workspace-techchallenger
