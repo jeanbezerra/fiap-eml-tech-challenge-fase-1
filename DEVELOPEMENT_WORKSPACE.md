@@ -10,14 +10,14 @@ A base de um ambiente de desenvolvimento eficiente começa pela padronização d
 
 Sem essa uniformidade, o trabalho colaborativo torna-se caótico, não é viável desenvolver um software em equipe sem um padrão mínimo de ferramentas, IDEs, sistemas operacionais e, principalmente, uma estrutura de diretórios comum que atenda aos objetivos de cada projeto. A ausência desse alinhamento gera retrabalho, perda de produtividade e dificuldade na integração de entregas.
 
-**Boas práticas a adotar**
+**1.1. Boas práticas a adotar**
 
 - Defina um diretório raiz único para todos os projetos relacionados;
 - Mantenha nomenclaturas consistentes (sem espaços ou caracteres especiais desnecessários);
 - Separe claramente os tipos de artefatos, como código-fonte, documentação, testes, pacotes gerados e dependências;
 - Evite alterações não acordadas, garantindo que qualquer mudança de estrutura seja discutida previamente com a equipe.
 
-**Reflexão importante:**
+**1.2. Reflexão importante:**
 
 Antes de propor ou adotar novas mudanças, consulte todos os membros do projeto. Dessa forma, garantimos um ambiente unificado, totalmente integrado, previsível e nivelado para todos os envolvidos. A padronização é um dos pilares para a colaboração efetiva e para a qualidade contínua do produto de software.
 
