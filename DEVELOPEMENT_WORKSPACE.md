@@ -66,7 +66,7 @@ Essa abordagem garante não apenas organização local, mas também clareza quan
 
 O projeto utiliza o **[uv](https://docs.astral.sh/uv/)** como gerenciador de pacotes Python moderno e de alta performance.
 
-**2.1 Instalação no Windows (PowerShell)
+**2.1 - Instalação no Windows (PowerShell)**
 
 Execute o comando em seu terminal PowerShell como Administrador.
 
