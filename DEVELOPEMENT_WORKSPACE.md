@@ -39,7 +39,7 @@ Após a instalação, verifique a versão:
 uv --version
 ```
 
-## 3. IDEs Recomendadas
+## 3. IDE - Integrated Development Environment
 
 Escolha a IDE ou editor de texto de sua preferência entre as opções abaixo:
 
