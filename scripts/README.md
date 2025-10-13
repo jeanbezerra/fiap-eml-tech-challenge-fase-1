@@ -3,7 +3,7 @@
 ## Dependencias:
 
 ```powershell
-uv add beautifulsoup4 requests
+uv add beautifulsoup4 requests psycopg2
 ```
 
 ## Como executar?
