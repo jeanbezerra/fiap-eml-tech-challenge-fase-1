@@ -6,9 +6,14 @@
 uv add beautifulsoup4 requests
 ```
 
+## Como executar?
 
-## Orquestradores de DAG (Scheduller)
+Sincronize as bibliotecas que o projeto tem como dependência, antes de executar o script de scraping.
 
+```powershell
+uv sync
+```
 
-## Apache Airflow (Docker)
-
+```powershell
+uv run python main.py
+```
