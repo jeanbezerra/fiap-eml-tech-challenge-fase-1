@@ -65,12 +65,12 @@ def insert_books_from_csv(csv_file_path):
         execute_batch(cursor, insert_query, rows, page_size=100)
         connection.commit()
 
-        print(f"✅ Inserção concluída com sucesso — {len(rows)} registros salvos.")
+        print(f" Inserção concluída com sucesso — {len(rows)} registros salvos.")
     
     except Exception as e:
-        print(f"❌ Erro ao inserir dados: {e}")
+        print(f" Erro ao inserir dados: {e}")
         if connection:
-            connection.rollback()
+            connection.rollback() 
     finally:
         if connection:
             cursor.close()

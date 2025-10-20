@@ -1,6 +1,5 @@
 
-
-## Dependencias:
+# Dependencias
 
 ```powershell
 uv add beautifulsoup4 requests psycopg2
@@ -16,4 +15,3 @@ uv sync
 
 ```powershell
 uv run python main.py
-```
