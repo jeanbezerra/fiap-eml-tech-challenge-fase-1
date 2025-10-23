@@ -1,0 +1,84 @@
+# api_optional.py
+from fastapi import APIRouter
+# import pandas as pd
+
+app = FastAPI(
+    title="Books API - Endpoints Opcionais",
+    version="1.0",
+    description="Rotas opcionais de insights e análise de livros."
+)
+
+DATA_FILE = "scripts/books_to_scrape.csv"
+
+# -------------------------------------------
+# Função utilitária para carregar os dados
+# -------------------------------------------
+def load_books_df():
+    df = pd.read_csv(DATA_FILE)
+    # Garantir coluna id e converter preço/rating
+    if "id" not in df.columns:
+        df = df.reset_index().rename(columns={"index": "id"})
+        df["id"] = df["id"] + 1
+    df["price"] = df["price"].replace("£", "", regex=True).astype(float)
+    # Alguns CSVs podem ter rating textual ("Three", "Four" etc.)
+    rating_map = {
+        "One": 1, "Two": 2, "Three": 3, "Four": 4, "Five": 5
+    }
+    if df["rating"].dtype == object:
+        df["rating"] = df["rating"].map(rating_map).fillna(0)
+    return df
+
+
+# -------------------------------------------
+# /api/v1/stats/overview
+# Estatísticas gerais dos livros
+# -------------------------------------------
+@app.get("/api/v1/stats/overview", tags=["Opcionais"])
+def stats_overview():
+    """
+    Retorna estatísticas gerais da coleção:
+    - total de livros
+    - preço médio
+    - média de avaliação (rating)
+    """
+    df = load_books_df()
+    return {
+        "total_books": len(df),
+        "avg_price": round(df["price"].mean(), 2),
+        "avg_rating": round(df["rating"].mean(), 2),
+    }
+
+
+# -------------------------------------------
+# /api/v1/stats/categories
+# Estatísticas agrupadas por categoria
+# -------------------------------------------
+@app.get("/api/v1/stats/categories", tags=["Opcionais"])
+def stats_by_category():
+    """
+    Retorna estatísticas por categoria:
+    - quantidade de livros
+    - preço médio
+    """
+    df = load_books_df()
+    grouped = df.groupby("category").agg(
+        total_books=("title", "count"),
+        avg_price=("price", "mean")
+    ).reset_index()
+    grouped["avg_price"] = grouped["avg_price"].round(2)
+    return grouped.to_dict(orient="records")
+
+
+# -------------------------------------------
+# /api/v1/books/price-range
+# Filtro de livros por faixa de preço
+# -------------------------------------------
+@app.get("/api/v1/books/price-range", tags=["Opcionais"])
+def filter_by_price(min: float = 0, max: float = 9999):
+    """
+    Filtra livros dentro de uma faixa de preço específica.
+    Exemplo: /api/v1/books/price-range?min=10&max=30
+    """
+    df = load_books_df()
+    filtered = df[(df["price"] >= min) & (df["price"] <= max)]
+    return filtered.to_dict(orient="records")
