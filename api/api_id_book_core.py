@@ -1,9 +1,9 @@
 from fastapi import APIRouter, HTTPException
 from uuid import UUID
-from .data_base import get_connection, release_connection
+from data_base import get_connection, release_connection
 import psycopg2
 
-router = APIRouter(prefix="/api/v1/books")
+router = APIRouter(prefix="/books")
 
 @router.get("/{id}")
 def get_book_by_id(book_id: UUID):

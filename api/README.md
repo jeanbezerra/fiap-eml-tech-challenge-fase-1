@@ -18,4 +18,6 @@ uv sync
 
 ```powershell
 uv run uvicorn api.api_main:app
+
+uv run uvicorn api.api_main:app -reload
 ```

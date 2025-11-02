@@ -1,7 +1,7 @@
 from fastapi import APIRouter
-from .data_base import get_connection, release_connection
+from data_base import get_connection, release_connection
 
-router = APIRouter(prefix="/api/v1/stats", tags=["Opcionais"])
+router = APIRouter(prefix="/stats", tags=["Opcionais"])
 
 @router.get("/categories", summary="Estatísticas detalhadas por categoria")
 def stats_by_category():

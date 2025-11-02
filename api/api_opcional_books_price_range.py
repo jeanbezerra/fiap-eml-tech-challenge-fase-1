@@ -1,13 +1,19 @@
-from fastapi import APIRouter
-from .data_base import get_connection, release_connection
+from fastapi import APIRouter, Query, HTTPException
+from data_base import get_connection, release_connection
+import psycopg2
 
-router = APIRouter(prefix="/api/v1/books", tags=["Opcionais"])
+router = APIRouter(prefix="/books")
 
-@router.get("/price-range", summary="Filtra livros dentro de uma faixa de preço específica")
-def filter_by_price(min: float = 0, max: float = 9999):
+@router.get("/", summary="Listar livros por faixa de preço")
+def listar_livros_por_faixa_de_preco(
+    min_price: float = Query(0, description="Preço mínimo para filtro"),
+    max_price: float = Query(9999, description="Preço máximo para filtro")
+):
     """
-    Filtra livros com preço entre os valores informados.
-    Exemplo: /api/v1/books/price-range?min=10&max=30
+    Retorna os livros cujo preço está entre os valores informados.
+    
+    Exemplo de uso:
+    `/api/v1/books?min_price=10&max_price=50`
     """
     conn = None
     try:
@@ -20,13 +26,19 @@ def filter_by_price(min: float = 0, max: float = 9999):
             FROM public.book_scraping_data
             WHERE price BETWEEN %s AND %s
             ORDER BY price ASC;
-        """, (min, max))
+        """, (min_price, max_price))
 
         rows = cursor.fetchall()
+
+        if not rows:
+            raise HTTPException(status_code=404, detail="Nenhum livro encontrado na faixa de preço especificada.")
+
         columns = [desc[0] for desc in cursor.description]
-        books = [dict(zip(columns, row)) for row in rows]
+        livros = [dict(zip(columns, row)) for row in rows]
 
-        return {"count": len(books), "books": books}
+        return {"quantidade": len(livros), "livros": livros}
 
+    except psycopg2.Error as db_err:
+        raise HTTPException(status_code=500, detail=f"Erro no banco de dados: {db_err}")
     finally:
         release_connection(conn)

@@ -1,11 +1,14 @@
-from fastapi import APIRouter
-from .data_base import get_connection, release_connection
+from fastapi import APIRouter, HTTPException
+from data_base import get_connection, release_connection
 import psycopg2
 
-router = APIRouter(prefix="/api/v1/books")
+router = APIRouter()
 
-@router.get("/", summary=" list all available books")
-def list_all_books():
+@router.get("/books", summary="Listar todos os livros disponíveis")
+def listar_todos_os_livros():
+    """
+    Retorna todos os livros armazenados no banco de dados, ordenados pela data de coleta mais recente.
+    """
     conn = None
     try:
         conn = get_connection()
@@ -16,8 +19,16 @@ def list_all_books():
             ORDER BY collected_at DESC;
         """)
         rows = cursor.fetchall()
+
+        if not rows:
+            raise HTTPException(status_code=404, detail="Nenhum livro encontrado.")
+
         columns = [desc[0] for desc in cursor.description]
-        books = [dict(zip(columns, row)) for row in rows]
-        return {"count": len(books), "books": books}
+        livros = [dict(zip(columns, row)) for row in rows]
+
+        return {"quantidade": len(livros), "livros": livros}
+
+    except psycopg2.Error as db_err:
+        raise HTTPException(status_code=500, detail=f"Erro de banco de dados: {db_err}")
     finally:
         release_connection(conn)

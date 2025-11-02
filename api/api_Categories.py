@@ -1,9 +1,9 @@
 from fastapi import APIRouter
-from .data_base import get_connection, release_connection
+from data_base import get_connection, release_connection
 
-router = APIRouter(prefix="/api/v1/Categories")
+router = APIRouter(prefix="/books")
 
-@router.get("/")
+@router.get("/categories")
 def get_categories():
     """
     Lista todas as categorias disponíveis.

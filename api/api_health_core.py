@@ -1,7 +1,7 @@
 from fastapi import APIRouter
-from .data_base import get_connection, release_connection
+from data_base import get_connection, release_connection
 
-router = APIRouter(prefix="/api/v1/health")
+router = APIRouter(prefix="/health")
 
 @router.get("/")
 def health_check():

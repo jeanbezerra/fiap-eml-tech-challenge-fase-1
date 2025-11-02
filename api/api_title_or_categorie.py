@@ -1,17 +1,19 @@
 from typing import Optional
 from fastapi import APIRouter, Query, HTTPException
 import psycopg2
-from .data_base import get_connection, release_connection
+from data_base import get_connection, release_connection
 
-router = APIRouter(prefix="/api/v1/title_or_categorie")
+router = APIRouter(prefix="/books")
 
-@router.get("/")
-def search_books(
+@router.get("/", summary="Listar livros por título e/ou categoria")
+def list_books(
     title: Optional[str] = Query(None, description="Parte ou nome completo do título"),
-    category: Optional[str] = Query(None, description="Categoria")
+    category: Optional[str] = Query(None, description="Categoria"),
 ):
     """
-    Busca livros por título e/ou categoria.
+    Lista todos os livros ou filtra por título e/ou categoria.
+    Exemplo:
+        GET /api/v1/books?title=python&category=programming
     """
     conn = None
     try:
@@ -25,14 +27,12 @@ def search_books(
         """
         params = []
 
-        # Filtro por título
         if title:
             query += " AND title ILIKE %s"
             params.append(f"%{title}%")
 
-        # Filtro por categoria 
         if category:
-            query += " AND availability ILIKE %s"
+            query += " AND category ILIKE %s"
             params.append(f"%{category}%")
 
         query += " ORDER BY collected_at DESC"

@@ -1,9 +1,9 @@
 from fastapi import APIRouter
-from .data_base import get_connection, release_connection
+from data_base import get_connection, release_connection
 
-router = APIRouter(prefix="/api/v1/books", tags=["Opcionais"])
+router = APIRouter(prefix="/books", tags=["Opcionais"])
 
-@router.get("/top-rated", summary="Lista os livros com melhor avaliação (rating mais alto)")
+@router.get("/best-rated", summary="Lista os livros com melhor avaliação (rating mais alto)")
 def top_rated_books(limit: int = 10):
     """
     Retorna os livros com melhor rating.
