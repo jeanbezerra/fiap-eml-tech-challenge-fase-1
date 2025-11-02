@@ -36,26 +36,29 @@
 ```
 .
 ├── api/
-│   ├── main.py                 # Entrypoint FastAPI/Flask
-│   ├── routers/                # Rotas organizadas por domínio
-│   ├── services/               # Regras de negócio/consultas
-│   ├── models/                 # Modelos pydantic/ORM (opcional)
-│   └── deps/                   # Dependências (auth/db/cache) - opcional
+│   ├── api_main.py                         # Entrypoint principal da API
+│   ├── api_books.py                        # Endpoint: listar livros
+│   ├── api_id_book_core.py                 # Endpoint: detalhes por ID
+│   ├── api_title_or_categorie.py           # Endpoint: busca por título/categoria
+│   ├── api_Categories.py                   # Endpoint: categorias
+│   ├── api_health_core.py                  # Endpoint: health check
+│   ├── api_opcional_overview.py            # Endpoint opcional: estatísticas gerais
+│   ├── api_opcional_categories.py          # Endpoint opcional: estatísticas por categoria
+│   ├── api_opcional_books_top_rated.py     # Endpoint opcional: livros com melhor rating
+│   ├── api_opcional_books_price_range.py   # Endpoint opcional: filtro por faixa de preço
+│   └── data_base.py                        # Conexão com banco de dados (opcional)
+│
 ├── scripts/
-│   └── scrape_books.py         # Script de scraping automatizado
+│   └── scrape_books.py                     # Script de scraping automatizado
+│
 ├── data/
-│   └── books.csv               # Saída do scraping (gerada)
-├── tests/                      # Testes unitários
-├── docs/
-│   └── architecture.png        # Diagrama arquitetural (opcional)
-├── .env.example                # Variáveis de ambiente (copie para .env)
-├── pyproject.toml / requirements.txt
-├── Dockerfile
-├── Makefile                    # Alvos úteis (run, test, scrape, lint)
-└── README.md
-```
+│   └── books_to_scrape.csv                 # Base local com os dados extraídos
+│
+├── README.md
+├── pyproject.toml
+└── uv.lock
 
----
+```
 
 ## ⚙️ Instalação & Configuração
 
@@ -124,17 +127,17 @@ id,title,price,rating,availability,category,image_url,product_page_url
 
 ## 🚀 Execução da API
 
-### FastAPI (exemplo)
+### FastAPI (com uv)
 ```bash
-# Via Makefile
-make run
-# ou diretamente com uvicorn
-uvicorn api.main:app --host 0.0.0.0 --port 8000 --reload
+# Executar localmente com hot reload
+uv run uvicorn api.api_main:app --reload
+
 ```
 
 - **Documentação Swagger**: `http://localhost:8000/docs`
 - **OpenAPI JSON**: `http://localhost:8000/openapi.json`
 
+📦 As APIs foram modularizadas em arquivos separados dentro de api/, mantendo uma arquitetura mais escalável e limpa.
 ---
 
 ## 🔌 Endpoints da API (Core)
@@ -279,11 +282,11 @@ Inclua:
 
 ## 📌 Entregáveis Requeridos (Checklist)
 
-- [ ] Repositório organizado (`scripts/`, `api/`, `data/`, etc.)
-- [ ] README completo (este arquivo)
-- [ ] Script de scraping funcional → **CSV** gerado
-- [ ] API RESTful (Flask/FastAPI) + **Swagger**
-- [ ] Deploy público com link funcional
+- [x] Repositório organizado (`scripts/`, `api/`, `data/`, etc.)
+- [x] README completo (este arquivo)
+- [x] Script de scraping funcional → **CSV** gerado
+- [x] API RESTful (Flask/FastAPI) + **Swagger**
+- [x] Deploy público com link funcional
 - [ ] Plano arquitetural (diagrama ou doc)
 - [ ] Vídeo de apresentação (3–12 min)
 
@@ -314,4 +317,4 @@ Este projeto é distribuído sob a licença MIT (ou defina a de sua preferência
 
 ---
 
-> **Observação:** Este README segue integralmente os requisitos do enunciado da fase, incluindo endpoints obrigatórios e opcionais, deploy público e vídeo de apresentação. Preencha os campos de **deploy**, **vídeo** e **diagrama** quando finalizar cada etapa.
+> **Observação:** Este README segue integralmente os requisitos do enunciado da fase, incluindo endpoints obrigatórios e opcionais, deploy público e vídeo de apresentação. Preencher os campos de **deploy**, **vídeo** e **diagrama** quando finalizar cada etapa.
