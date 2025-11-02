@@ -1,28 +1,51 @@
 from fastapi import APIRouter
-# import pandas as pd
+from .data_base import get_connection, release_connection
 
 router = APIRouter(prefix="/api/v1/stats", tags=["Opcionais"])
 
-DATA_FILE = "scripts/books_to_scrape.csv"
-
-def load_books_df():
-    df = pd.read_csv(DATA_FILE)
-    if "id" not in df.columns:
-        df = df.reset_index().rename(columns={"index": "id"})
-        df["id"] = df["id"] + 1
-    df["price"] = df["price"].replace("£", "", regex=True).astype(float)
-    rating_map = {"One": 1, "Two": 2, "Three": 3, "Four": 4, "Five": 5}
-    if df["rating"].dtype == object:
-        df["rating"] = df["rating"].map(rating_map).fillna(0)
-    return df
-
-
-@router.get("/overview")
+@router.get("/overview", summary="Estatísticas gerais da coleção de livros")
 def stats_overview():
-    """Estatísticas gerais da coleção de livros"""
-    df = load_books_df()
-    return {
-        "total_books": len(df),
-        "avg_price": round(df["price"].mean(), 2),
-        "avg_rating": round(df["rating"].mean(), 2),
-    }
+    """
+    Retorna estatísticas gerais da coleção:
+    - Total de livros
+    - Preço médio
+    - Distribuição de ratings (contagem por nota)
+    """
+    conn = None
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        # Estatísticas gerais
+        cursor.execute("""
+            SELECT 
+                COUNT(*) AS total_books,
+                ROUND(AVG(price), 2) AS avg_price
+            FROM public.book_scraping_data;
+        """)
+        totals = cursor.fetchone()
+        total_books, avg_price = totals
+
+        # Distribuição de ratings (ex: quantos livros têm rating 5, 4, etc.)
+        cursor.execute("""
+            SELECT 
+                rating,
+                COUNT(*) AS count
+            FROM public.book_scraping_data
+            WHERE rating IS NOT NULL
+            GROUP BY rating
+            ORDER BY rating::NUMERIC DESC;
+        """)
+        ratings = cursor.fetchall()
+        rating_distribution = [
+            {"rating": row[0], "count": row[1]} for row in ratings
+        ]
+
+        return {
+            "total_books": total_books,
+            "avg_price": avg_price,
+            "rating_distribution": rating_distribution
+        }
+
+    finally:
+        release_connection(conn)
