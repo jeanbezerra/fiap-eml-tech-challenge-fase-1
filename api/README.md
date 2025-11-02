@@ -17,5 +17,5 @@ uv sync
 ```
 
 ```powershell
-uv run uvicorn api:app --reload
+uv run uvicorn api.api_main:app
 ```
