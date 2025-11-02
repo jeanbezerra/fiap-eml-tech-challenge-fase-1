@@ -15,3 +15,8 @@ uv sync
 
 ```powershell
 uv run python main.py
+```
+
+```powershell
+uv run python save_books_to_postgres.py
+```

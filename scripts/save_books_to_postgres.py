@@ -15,7 +15,7 @@ DB_CONFIG = {
 }
 
 # --------------------------------------------
-# FUNÇÃO PARA CONVERTER O RATING (texto → número)
+# MAPA DE CONVERSÃO DE RATING (texto → número)
 # --------------------------------------------
 RATING_MAP = {
     "One": 1,
@@ -26,6 +26,7 @@ RATING_MAP = {
 }
 
 def convert_rating(rating_str):
+    """Converte o rating textual ('Three', 'Five') para número inteiro."""
     return RATING_MAP.get(rating_str, None)
 
 # --------------------------------------------
@@ -42,43 +43,52 @@ def insert_books_from_csv(csv_file_path):
             rows = []
 
             for row in reader:
-                # Limpeza e conversão de dados
+                # Limpeza e conversão dos dados
                 title = row["title"].strip()
                 book_url = row["book_url"].strip()
+                category = row.get("category", "").strip() or None
                 price_str = row["price"].replace("£", "").strip()
                 price = Decimal(price_str) if price_str else Decimal("0.00")
                 availability = row["availability"].strip()
                 rating = convert_rating(row["rating"].strip()) if row["rating"] else None
                 image_url = row.get("image_url", "").strip()
 
-                rows.append((title, book_url, price, availability, rating, image_url))
+                rows.append((
+                    title,
+                    book_url,
+                    category,
+                    price,
+                    availability,
+                    rating,
+                    image_url
+                ))
 
         # --------------------------------------------
-        # INSERT EM LOTE
+        # INSERT EM LOTE (com categoria)
         # --------------------------------------------
         insert_query = """
             INSERT INTO public.book_scraping_data
-            (title, book_url, price, availability, rating, image_url)
-            VALUES (%s, %s, %s, %s, %s, %s)
+                (title, book_url, category, price, availability, rating, image_url)
+            VALUES (%s, %s, %s, %s, %s, %s, %s)
         """
 
         execute_batch(cursor, insert_query, rows, page_size=100)
         connection.commit()
 
-        print(f" Inserção concluída com sucesso — {len(rows)} registros salvos.")
-    
+        print(f"Inserção concluída com sucesso — {len(rows)} registros salvos.")
+
     except Exception as e:
-        print(f" Erro ao inserir dados: {e}")
+        print(f"Erro ao inserir dados: {e}")
         if connection:
-            connection.rollback() 
+            connection.rollback()
     finally:
         if connection:
             cursor.close()
             connection.close()
-            print("🔌 Conexão com o banco encerrada.")
+            print("Conexão com o banco encerrada.")
 
 # --------------------------------------------
 # EXECUÇÃO DIRETA
 # --------------------------------------------
 if __name__ == "__main__":
-    insert_books_from_csv("books_to_scrape.csv")
+    insert_books_from_csv("./data/books_to_scrape.csv")

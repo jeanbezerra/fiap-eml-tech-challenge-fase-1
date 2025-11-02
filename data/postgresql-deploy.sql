@@ -8,6 +8,7 @@ CREATE TABLE public.book_scraping_data (
     availability    VARCHAR(100) NOT NULL,
     rating          VARCHAR(20) NULL,
     image_url       TEXT NULL,
+    category        VARCHAR(50),
     collected_at    TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
