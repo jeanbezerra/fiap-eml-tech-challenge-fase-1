@@ -1,3 +1,5 @@
+import os
+import concurrent.futures
 import requests
 from bs4 import BeautifulSoup
 import csv
@@ -67,46 +69,71 @@ def scrape_book_list(page_url):
     return books
 
 
-def scrape_all_books(start_url, max_pages=50, delay=0.1):
+def scrape_all_books(start_url, max_pages=50, max_workers=8):
     """
-    Percorre todas as páginas e agrega os resultados em uma única lista.
+    Percorre todas as páginas em paralelo e agrega os resultados.
     """
     all_books = []
     base = start_url.rstrip("/").rsplit("/", 1)[0] + "/catalogue/page-{}.html"
 
-    for i in range(1, max_pages + 1):
-        page_url = base.format(i)
-        print(f"Scraping página {i} → {page_url}")
-        try:
-            books = scrape_book_list(page_url)
-        except requests.HTTPError as e:
-            print("Erro HTTP:", e)
-            break
-        if not books:
-            print("Nenhum livro encontrado — fim das páginas.")
-            break
-        all_books.extend(books)
-        time.sleep(delay)
+    page_urls = [base.format(i) for i in range(1, max_pages + 1)]
+
+    start_time = time.time()
+    with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
+        futures = {executor.submit(scrape_book_list, url): url for url in page_urls}
+
+        for future in concurrent.futures.as_completed(futures):
+            url = futures[future]
+            try:
+                books = future.result()
+                if books:
+                    all_books.extend(books)
+            except requests.HTTPError as e:
+                print(f"Erro HTTP em {url}: {e}")
+
+    elapsed = time.time() - start_time
+    print(f"Coleta finalizada: {len(all_books)} livros em {elapsed:.2f}s (threads={max_workers})")
     return all_books
 
 
-def save_to_csv(books, filename="books_to_scrape.csv"):
+def save_to_csv(books, filename="./data/books_to_scrape.csv"):
     """
     Salva os dados coletados em um arquivo CSV com codificação UTF-8.
+    Cria automaticamente o diretório de destino, trata erros de I/O
+    e exibe mensagens de status.
     """
     if not books:
+        print("Nenhum dado para salvar.")
         return
-    keys = books[0].keys()
-    with open(filename, "w", newline="", encoding="utf-8") as f:
-        writer = csv.DictWriter(f, fieldnames=keys)
-        writer.writeheader()
-        writer.writerows(books)
+
+    # Garante que o diretório existe
+    output_dir = os.path.dirname(filename)
+    if output_dir:
+        os.makedirs(output_dir, exist_ok=True)
+
+    start_time = time.time()
+    try:
+        keys = books[0].keys()
+        with open(filename, "w", newline="", encoding="utf-8") as f:
+            writer = csv.DictWriter(f, fieldnames=keys)
+            writer.writeheader()
+            writer.writerows(books)
+
+        elapsed = time.time() - start_time
+        print(f"Arquivo salvo com sucesso: {filename}")
+        print(f"Total de registros: {len(books)} | Tempo: {elapsed:.2f}s")
+
+    except Exception as e:
+        print(f"Erro ao salvar o arquivo CSV: {e}")
+
 
 
 if __name__ == "__main__":
     start = "https://books.toscrape.com/index.html"
-    books = scrape_all_books(start, max_pages=50, delay=0.1)
+    books = scrape_all_books(start, max_pages=50)
     print(f"Total de registros coletados: {len(books)}")
+
     if books:
         save_to_csv(books, "./data/books_to_scrape.csv")
-    print("Coleta de dados realizada com sucesso.")
+
+    print("Coleta de dados finalizada com sucesso.")

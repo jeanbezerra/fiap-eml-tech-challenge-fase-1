@@ -14,7 +14,7 @@ uv sync
 ```
 
 ```powershell
-uv run python main.py
+uv run python scrape_books.py
 ```
 
 ```powershell
