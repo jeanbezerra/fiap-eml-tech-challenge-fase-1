@@ -9,7 +9,7 @@ uv init
 ## Como rodar
 
 ```powershell
-uv add uvicorn fastapi
+uv add uvicorn fastapi psycopg2 psycopg2-binary
 ```
 
 ```powershell
@@ -17,9 +17,13 @@ uv sync
 ```
 
 ```powershell
-uv run uvicorn api_main:app
+uv build
 ```
 
 ```powershell
-uv run uvicorn api_main:app --reload
+uv run uvicorn fiap_eml_api.api_main:app
+```
+
+```powershell
+uv run uvicorn fiap_eml_api.api_main:app --reload
 ```
