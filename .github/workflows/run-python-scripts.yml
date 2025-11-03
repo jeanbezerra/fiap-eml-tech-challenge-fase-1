@@ -1,0 +1,48 @@
+name: Run Python Scripts
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+env:
+  DB_HOST: ${{ secrets.DB_HOST }}
+  DB_PORT: ${{ secrets.DB_PORT }}
+  DB_NAME: ${{ secrets.DB_NAME }}
+  DB_USER: ${{ secrets.DB_USER }}
+  DB_PASS: ${{ secrets.DB_PASS }}
+
+jobs:
+  run-scripts:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        run: |
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      - name: Install dependencies
+        run: |
+          cd scripts
+          uv sync --all-extras --dev
+
+      - name: Run webscraping script
+        run: |
+          cd scripts
+          uv run python scrape_books.py
+
+      - name: Insert data into PostgreSQL
+        run: |
+          cd scripts
+          uv run python save_books_to_postgres.py
+
+      - name: Upload CSV result
+        uses: actions/upload-artifact@v4
+        with:
+          name: books-data
+          path: scripts/data/*.csv
