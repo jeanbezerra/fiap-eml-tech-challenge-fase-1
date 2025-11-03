@@ -1,17 +1,18 @@
+import os
 import csv
 import psycopg2
 from psycopg2.extras import execute_batch
 from decimal import Decimal
 
 # --------------------------------------------
-# CONFIGURAÇÕES DO BANCO DE DADOS
+# CONFIGURAÇÕES DO BANCO DE DADOS (via variáveis de ambiente)
 # --------------------------------------------
 DB_CONFIG = {
-    "host": "201.23.68.219",
-    "port": 5432,
-    "dbname": "fiap_eml_db",
-    "user": "postgres",
-    "password": "(Pk3LfT7N;P5zfPc"
+    "host": os.getenv("DB_HOST", "localhost"),
+    "port": int(os.getenv("DB_PORT", "5432")),
+    "dbname": os.getenv("DB_NAME", "fiap_eml_db"),
+    "user": os.getenv("DB_USER", "postgres"),
+    "password": os.getenv("DB_PASS", "postgres")
 }
 
 # --------------------------------------------
@@ -35,6 +36,7 @@ def convert_rating(rating_str):
 def insert_books_from_csv(csv_file_path):
     connection = None
     try:
+        print(f"Conectando ao banco: {DB_CONFIG['host']}:{DB_CONFIG['port']} / {DB_CONFIG['dbname']}")
         connection = psycopg2.connect(**DB_CONFIG)
         cursor = connection.cursor()
 
@@ -47,7 +49,7 @@ def insert_books_from_csv(csv_file_path):
                 title = row["title"].strip()
                 book_url = row["book_url"].strip()
                 category = row.get("category", "").strip() or None
-                price_str = row["price"].replace("£", "").strip()
+                price_str = row["price"].strip()
                 price = Decimal(price_str) if price_str else Decimal("0.00")
                 availability = row["availability"].strip()
                 rating = convert_rating(row["rating"].strip()) if row["rating"] else None
