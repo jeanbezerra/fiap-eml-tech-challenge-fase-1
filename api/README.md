@@ -27,3 +27,7 @@ uv run uvicorn fiap_eml_api.api_main:app
 ```powershell
 uv run uvicorn fiap_eml_api.api_main:app --reload
 ```
+
+```sh
+df -h
+```
