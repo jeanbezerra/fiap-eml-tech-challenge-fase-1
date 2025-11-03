@@ -292,29 +292,83 @@ Inclua:
 
 > **Plus (10 pts):** concluir **Beginner: Introduction to Generative AI Learning Path** (Google Cloud Skill Boost) e anexar comprovante.
 
----
 
-## 📎 Referências
+## Arquitetura — 
 
-- Books to Scrape: https://books.toscrape.com/
-- FastAPI: https://fastapi.tiangolo.com/
-- Requests/HTTPX, BeautifulSoup4/Selectolax, Uvicorn, Pydantic.
-- Render/Fly.io/Heroku/Vercel para deploy.
+### Padrão C4 nível 3 (Componentes)
 
----
+Visualizações:
+- PNG (preview rápido): ![Arquitetura atual – C4 Nível 3](./docs/arquitetura-atual-c4-nivel-3.png)
+- SVG (vetorial p/ zoom e impressão): ![Arquitetura atual – C4 Nível 3](./docs/arquitetura-atual-c4-nivel-3.svg)
 
-## 📝 Licença
+### O que o diagrama mostra
 
-Este projeto é distribuído sob a licença MIT (ou defina a de sua preferência).
+O diagrama apresenta os componentes internos da solução (nível 3 do C4), destacando:
+- O container da API (FastAPI/Uvicorn) e seus routers de domínio.
+- O adaptador de acesso a dados (psycopg2) e o PostgreSQL.
+- O pipeline ETL (coleta → CSV → carga em banco), orquestrado por GitHub Actions.
+- As dependências externas: Render (hospedagem) e books.toscrape.com (fonte pública de dados).
 
----
+### Principais componentes
 
-## 💡 Como contribuir
+**Pessoa / Atores**
+- **Usuário (Dev/Analista)** — Consome a API para consultas, filtros e diagnósticos (ex.: health check).
 
-1. Crie uma branch a partir de `main`: `feat/minha-feature`.
-2. Adicione testes e documentação.
-3. Abra um Pull Request descrevendo o escopo da mudança.
+**Container: API (FastAPI + Uvicorn)**
+- **`api_main.py`** — Ponto de entrada do app. Registra e expõe os routers.
+- **Routers** (separação por responsabilidade, aderente a REST):
+  - `api_books.py` — Endpoints de livros (listagem, busca, filtros).
+  - `api_categories.py` — Endpoints de categorias (ex.: lista de categorias).
+  - `api_id_book_core.py` — Detalhe de livro por **ID**.
+  - `api_opcional_books_price_range.py` — **Filtro por faixa de preço** (`min_price`/`max_price`).
+  - `api_opcional_books_best_rated.py` — Ordenação por **melhor avaliação**.
+  - `api_opcional_overview.py` — Indicadores/visão geral (KPI).
+  - `api_title_or_categorie.py` — Busca por **título** e/ou **categoria**.
+  - `api_health_core.py` — **Health check** (readiness/liveness).
+- **Acesso a dados**
+  - `data_base.py` — **PostgresAdapter** centraliza conexões/execução SQL via **psycopg2**.
 
----
+**Banco de Dados**
+- **PostgreSQL** — Tabela principal `public.book_scraping_data` (campos como `title`, `book_url`, `category`, `price`, `availability`, `rating`, `image_url`, `collected_at`).
 
-> **Observação:** Este README segue integralmente os requisitos do enunciado da fase, incluindo endpoints obrigatórios e opcionais, deploy público e vídeo de apresentação. Preencher os campos de **deploy**, **vídeo** e **diagrama** quando finalizar cada etapa.
+**ETL (Scripts)**
+- `scrape_books.py` — **Coleta** do site público (Requests + BeautifulSoup) e **gera CSV**.
+- `save_books_to_postgres.py` — **Limpa** a tabela e **insere** os registros do CSV em lote (`execute_batch`).
+
+**Sistemas Externos**
+- **books.toscrape.com** — Fonte pública de livros para scraping.
+- **GitHub Actions** — Orquestra a execução dos scripts (manual e/ou por push na `main`).
+- **Render** — **Hospeda** o processo FastAPI/Uvicorn em produção.
+
+### Fluxos principais
+
+1. **Consulta via API**  
+   Usuário → `api_main.py` → Router (ex.: `api_books.py`) → `data_base.py` → PostgreSQL → resposta JSON.
+
+2. **Filtros e leitura**  
+   - Filtro de **preço**: `api_opcional_books_price_range.py` executa `WHERE price BETWEEN ...`.
+   - **Categorias**: `api_categories.py` executa `SELECT DISTINCT category`.
+   - **Detalhe por ID**: `api_id_book_core.py` faz `SELECT ... WHERE id = ...`.
+   - **Best rated**: `api_opcional_books_best_rated.py` ordena por `rating DESC`.
+
+3. **Health check**  
+   `api_health_core.py` valida disponibilidade da API e, opcionalmente, conectividade ao banco.
+
+4. **Pipeline ETL**  
+   GitHub Actions → `scrape_books.py` (coleta + CSV) → `save_books_to_postgres.py`
+   (limpa a tabela e realiza **insert em lote**) → PostgreSQL.
+
+5. **Hospedagem/Deploy**  
+   Render executa o app com `uv run uvicorn ...` usando dependências resolvidas via `uv sync`.
+
+### Limites e acoplamentos (visão C4)
+
+- **API** e **ETL** são **containers** distintos (responsabilidades separadas).
+- Os **routers** **não** conhecem SQL diretamente; todo acesso ao banco passa pelo **PostgresAdapter** (`data_base.py`).
+- Integrações externas (**Render**, **GitHub Actions**, **books.toscrape.com**) ficam fora do boundary do sistema, conectadas por contratos simples (HTTP/CSV/SQL).
+
+### Observações de design
+
+- **Segurança de credenciais**: variáveis de ambiente (Render Secrets / GitHub Secrets).
+- **Resiliência**: insert em lote com tratamento de preço (Decimal), limpeza de tabela antes da carga (quando desejado).
+- **Evolução**: novos endpoints devem seguir o padrão dos routers (coeso, com acesso a dados via adapter).
