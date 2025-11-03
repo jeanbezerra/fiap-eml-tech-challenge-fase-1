@@ -1,22 +1,35 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from data_base import get_connection, release_connection
 
 router = APIRouter(prefix="/books")
 
-@router.get("/categories")
+@router.get("/categories", summary="Listar todas as categorias disponíveis")
 def get_categories():
     """
-    Lista todas as categorias disponíveis.
+    Retorna todas as categorias distintas dos livros disponíveis em estoque.
+    Não requer parâmetros.
     """
-    conn = get_connection()
+    conn = None
     try:
+        conn = get_connection()
         cursor = conn.cursor()
         cursor.execute("""
-            SELECT DISTINCT availability
+            SELECT DISTINCT category
             FROM public.book_scraping_data
-            ORDER BY availability;
+            WHERE availability = 'In stock'
+            ORDER BY category ASC;
         """)
-        categories = [row[0] for row in cursor.fetchall()]
-        return {"count": len(categories), "categories": categories}
+        rows = cursor.fetchall()
+
+        # Caso não haja categorias
+        if not rows:
+            raise HTTPException(status_code=404, detail="Nenhuma categoria encontrada.")
+
+        categorias = [row[0] for row in rows if row[0] is not None]
+        return {"quantidade": len(categorias), "categorias": categorias}
+
+    except psycopg2.Error as e:
+        raise HTTPException(status_code=500, detail=f"Erro no banco de dados: {e}")
     finally:
-        release_connection(conn)
+        if conn:
+            release_connection(conn)

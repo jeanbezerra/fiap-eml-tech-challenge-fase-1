@@ -14,7 +14,7 @@ def listar_todos_os_livros():
         conn = get_connection()
         cursor = conn.cursor()
         cursor.execute("""
-            SELECT id, title, book_url, price, availability, rating, image_url, collected_at
+            SELECT id, title, book_url, price, availability, rating, image_url, collected_at, category
             FROM public.book_scraping_data
             ORDER BY collected_at DESC;
         """)

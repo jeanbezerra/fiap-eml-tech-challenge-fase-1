@@ -33,9 +33,9 @@ app = FastAPI(
 # ------------------------------
 # Rotas obrigatórias
 # ------------------------------
+app.include_router(categories_router, prefix="/api/v1", tags=["Obrigatórios"])
 app.include_router(books_router, prefix="/api/v1", tags=["Obrigatórios"])
 app.include_router(search_router, prefix="/api/v1", tags=["Obrigatórios"])
-app.include_router(categories_router, prefix="/api/v1", tags=["Obrigatórios"])
 app.include_router(health_router, prefix="/api/v1", tags=["Obrigatórios"])
 app.include_router(list_books_router, prefix="/api/v1", tags=["Obrigatórios"])
 
@@ -47,6 +47,7 @@ app.include_router(stats_overview_router, prefix="/api/v1", tags=["Opcionais"])
 app.include_router(stats_categories_router, prefix="/api/v1", tags=["Opcionais"])
 app.include_router(best_rated_router, prefix="/api/v1", tags=["Opcionais"])
 app.include_router(price_range_router, prefix="/api/v1", tags=["Opcionais"])
+
 
 
 # ------------------------------

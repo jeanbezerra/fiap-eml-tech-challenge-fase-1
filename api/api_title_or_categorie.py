@@ -5,7 +5,7 @@ from data_base import get_connection, release_connection
 
 router = APIRouter(prefix="/books")
 
-@router.get("/", summary="Listar livros por título e/ou categoria")
+@router.get("/filters", summary="Listar livros por título e/ou categoria")
 def list_books(
     title: Optional[str] = Query(None, description="Parte ou nome completo do título"),
     category: Optional[str] = Query(None, description="Categoria"),

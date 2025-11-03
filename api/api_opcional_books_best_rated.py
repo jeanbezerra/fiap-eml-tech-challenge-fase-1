@@ -16,7 +16,7 @@ def top_rated_books(limit: int = 10):
 
         cursor.execute("""
             SELECT 
-                id, title, book_url, price, availability, rating, image_url, collected_at
+                id, title, book_url, price, availability, rating, image_url, collected_at, category
             FROM public.book_scraping_data
             WHERE rating IS NOT NULL
             ORDER BY rating::NUMERIC DESC, collected_at DESC

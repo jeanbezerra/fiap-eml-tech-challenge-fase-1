@@ -5,36 +5,31 @@ import psycopg2
 
 router = APIRouter(prefix="/books")
 
-@router.get("/{id}")
+@router.get("/id/{book_id}", summary="Buscar livro por ID (UUID)")
 def get_book_by_id(book_id: UUID):
     """
-    Retorna um livro pelo seu ID.
+    Retorna os detalhes de um livro específico com base no seu UUID.
+    Exemplo: /api/v1/books/id/d51ff023-6918-4663-8a27-60abd6e1eac3
     """
     conn = None
     try:
         conn = get_connection()
         cursor = conn.cursor()
-
         cursor.execute("""
-            SELECT id, title, book_url, price, availability, rating, image_url, collected_at
+            SELECT id, title, category, price, availability, rating, image_url
             FROM public.book_scraping_data
             WHERE id = %s;
         """, (str(book_id),))
+        row = cursor.fetchone()
 
-        book = cursor.fetchone()
-
-        if not book:
-            raise HTTPException(status_code=404, detail="Book not found")
+        if not row:
+            raise HTTPException(status_code=404, detail="Livro não encontrado.")
 
         columns = [desc[0] for desc in cursor.description]
-        book_dict = dict(zip(columns, book))
+        return dict(zip(columns, row))
 
-        return book_dict
-
-    except psycopg2.Error as db_err:
-        raise HTTPException(status_code=500, detail=f"Database error: {db_err}")
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Unexpected error: {e}")
+    except psycopg2.Error as e:
+        raise HTTPException(status_code=500, detail=f"Erro no banco de dados: {e}")
     finally:
         if conn:
             release_connection(conn)
