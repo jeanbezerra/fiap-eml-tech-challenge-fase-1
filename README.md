@@ -53,29 +53,31 @@ Diagramas (entregues nesta fase):
 ## Estrutura do Projeto
 
 ```
-.
-├── api/
-│   ├── api_main.py                         # Entrypoint da API
-│   ├── api_books.py                        # Listagem e filtros de livros
-│   ├── api_categories.py                   # Categorias disponíveis
-│   ├── api_id_book_core.py                 # Detalhe por ID
-│   ├── api_title_or_categorie.py           # Busca refinada
-│   ├── api_health_core.py                  # Health Check
-│   ├── api_auth_jwt.py                     # Login e autenticação JWT
-│   └── data_base.py                        # Adaptação de acesso a dados (DB opcional)
-│
-├── scripts/
-│   └── scrape_books.py                     # Coleta automatizada
-│
-├── data/
-│   └── books_to_scrape.csv                 # Base local gerada
-│
-├── docs/
-│   └── arquitetura-atual-c4-nivel-3.png
-│   └── arquitetura-atual-c4-nivel-3.svg
-│
+api/
 ├── pyproject.toml
-└── README.md
+├── render.yaml
+├── README.md
+├── uv.lock
+│
+└── src/
+    └── fiap_eml_api/
+        ├── __init__.py
+        ├── api_main.py                      # Entrypoint da API
+        ├── data_base.py                     # Conexão / Adaptador de dados
+        ├── security_core.py                 # Regras de autorização/segurança
+        │
+        ├── auth_jwt.py                      # Autenticação e geração de JWT
+        │
+        ├── api_books.py                     # Listagem e filtros de livros
+        ├── api_id_book_core.py              # Detalhes por ID
+        ├── api_categories.py                # Listagem de categorias
+        ├── api_title_or_categorie.py        # Busca refinada (título + categoria)
+        ├── api_health_core.py               # Health check / status da API
+        │
+        ├── api_opcional_overview.py               # Estatísticas gerais dos livros
+        ├── api_opcional_categories.py             # Estatísticas por categoria
+        ├── api_opcional_books_best_rated.py       # Livros com melhor avaliação
+        └── api_opcional_books_price_range.py      # Filtro por faixa de preço
 ```
 
 ## Instalação e Execução
