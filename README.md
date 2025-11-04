@@ -1,4 +1,4 @@
-# Tech Challenge — API Pública de Livros  
+# Tech Challenge - API Pública de Livros  
 
 **FIAP Pós-Graduação em Machine Learning Engineering – Fase 1**
 
