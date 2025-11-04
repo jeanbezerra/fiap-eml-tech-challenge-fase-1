@@ -106,13 +106,20 @@ uv sync
 
 ### Executar API
 ```bash
-uv run uvicorn api.api_main:app --reload
+uv run uvicorn fiap_eml_api.api_main:app --reload
 ```
 
-### Documentação (Swagger)
-```
-http://localhost:8000/docs
-```
+### Documentação (Desenvolvimento e Produtivo)
+
+Após iniciar o servidor, acesse no navegador para o ambiente de desenvolvimento:
+
+- Swagger UI: http://localhost:8000/
+- ReDoc: http://localhost:8000/redoc
+
+A API está publicada no ambiente de produção através do Render como ambiente produtivo:
+
+- Produção (Swagger): https://fiap-eml-tech-challenger-fase-1.onrender.com
+- Produção (ReDoc): https://fiap-eml-tech-challenger-fase-1.onrender.com/redoc
 
 ## Endpoints Principais
 
