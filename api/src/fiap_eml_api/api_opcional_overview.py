@@ -1,12 +1,13 @@
+from fastapi import APIRouter, HTTPException, Depends
+from fiap_eml_api.auth_jwt import get_current_user
 from http.client import HTTPException
-from fastapi import APIRouter
 from data_base import get_connection, release_connection
 import psycopg2 # Importar psycopg2 para tratamento de erros
 
 router = APIRouter(prefix="/stats", tags=["Opcionais"])
 
 @router.get("/overview", summary="Estatísticas gerais da coleção de livros")
-def stats_overview():
+def stats_overview(current_user: str = Depends(get_current_user)):
     """
     Retorna estatísticas gerais da coleção, incluindo a distribuição de ratings
     e o percentual que cada rating representa no total de livros.

@@ -1,5 +1,6 @@
+from fastapi import APIRouter, Query, HTTPException, Depends
+from fiap_eml_api.auth_jwt import get_current_user
 from typing import Optional
-from fastapi import APIRouter, Query, HTTPException
 import psycopg2
 from data_base import get_connection, release_connection
 
@@ -9,6 +10,7 @@ router = APIRouter(prefix="/books")
 def list_books(
     title: Optional[str] = Query(None, description="Parte ou nome completo do título"),
     category: Optional[str] = Query(None, description="Categoria"),
+    current_user: str = Depends(get_current_user)
 ):
     """
     Lista todos os livros ou filtra por título e/ou categoria.

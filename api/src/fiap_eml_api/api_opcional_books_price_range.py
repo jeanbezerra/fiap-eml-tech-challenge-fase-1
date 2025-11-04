@@ -1,4 +1,5 @@
-from fastapi import APIRouter, Query, HTTPException
+from fastapi import APIRouter, Query, HTTPException, Depends
+from fiap_eml_api.auth_jwt import get_current_user
 from data_base import get_connection, release_connection
 import psycopg2
 
@@ -7,7 +8,8 @@ router = APIRouter(prefix="/books")
 @router.get("/price-range", summary="Listar livros por faixa de preço")
 def listar_livros_por_faixa_de_preco(
     min_price: float = Query(description="Preço mínimo para filtro", alias="min_price"),
-    max_price: float = Query(description="Preço máximo para filtro", alias="max_price")
+    max_price: float = Query(description="Preço máximo para filtro", alias="max_price"),
+    current_user: str = Depends(get_current_user)
 ):
     """
     Retorna os livros cujo preço está entre os valores informados.

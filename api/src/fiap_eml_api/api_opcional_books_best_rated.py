@@ -1,10 +1,11 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException, Depends
+from fiap_eml_api.auth_jwt import get_current_user
 from data_base import get_connection, release_connection
 
 router = APIRouter(prefix="/books", tags=["Opcionais"])
 
 @router.get("/best-rated", summary="Lista os livros com melhor avaliação (rating mais alto)")
-def top_rated_books(limit: int = 10):
+def top_rated_books(limit: int = 10, current_user: str = Depends(get_current_user)):
     """
     Retorna os livros com melhor rating.
     Ordena do maior para o menor rating.

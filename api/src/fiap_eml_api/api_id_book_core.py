@@ -1,4 +1,5 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
+from fiap_eml_api.auth_jwt import get_current_user
 from uuid import UUID
 from data_base import get_connection, release_connection
 import psycopg2
@@ -6,7 +7,7 @@ import psycopg2
 router = APIRouter(prefix="/books")
 
 @router.get("/id/{book_id}", summary="Buscar livro por ID (UUID)")
-def get_book_by_id(book_id: UUID):
+def get_book_by_id(book_id: UUID, current_user: str = Depends(get_current_user)):
     """
     Retorna os detalhes de um livro específico com base no seu UUID.
     Exemplo: /api/v1/books/id/d51ff023-6918-4663-8a27-60abd6e1eac3

@@ -1,10 +1,11 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
+from fiap_eml_api.auth_jwt import get_current_user
 from data_base import get_connection, release_connection
 
 router = APIRouter(prefix="/books")
 
 @router.get("/categories", summary="Listar todas as categorias disponíveis")
-def get_categories():
+def get_categories(current_user: str = Depends(get_current_user)):
     """
     Retorna todas as categorias distintas dos livros disponíveis em estoque.
     Não requer parâmetros.

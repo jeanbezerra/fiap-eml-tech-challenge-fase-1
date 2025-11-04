@@ -8,6 +8,10 @@ Requires-Dist: fastapi>=0.119.0
 Requires-Dist: psycopg2>=2.9.11
 Requires-Dist: psycopg2-binary>=2.9.11
 Requires-Dist: uvicorn>=0.37.0
+Requires-Dist: python-jose[cryptography]>=3.3.0
+Requires-Dist: passlib[bcrypt]==1.7.4
+Requires-Dist: bcrypt==4.0.1
+Requires-Dist: python-multipart>=0.0.20
 
 # API - FastAPI
 
@@ -20,7 +24,7 @@ uv init
 ## Como rodar
 
 ```powershell
-uv add uvicorn fastapi
+uv add uvicorn fastapi psycopg2 psycopg2-binary python-multipart python-jose[cryptography]
 ```
 
 ```powershell
@@ -28,9 +32,13 @@ uv sync
 ```
 
 ```powershell
-uv run uvicorn api_main:app
+uv build
 ```
 
 ```powershell
-uv run uvicorn api_main:app --reload
+uv run uvicorn fiap_eml_api.api_main:app
+```
+
+```powershell
+uv run uvicorn fiap_eml_api.api_main:app --reload
 ```

@@ -19,6 +19,12 @@ from api_opcional_books_price_range import router as price_range_router
 
 
 # ------------------------------
+# Security : JWT
+# ------------------------------
+from fiap_eml_api.auth_jwt import router as auth_router
+
+
+# ------------------------------
 # Configuração principal da API
 # ------------------------------
 app = FastAPI(
@@ -49,10 +55,5 @@ app.include_router(best_rated_router, prefix="/api/v1", tags=["Opcionais"])
 app.include_router(price_range_router, prefix="/api/v1", tags=["Opcionais"])
 
 
-
-# ------------------------------
-# Rota raiz (home)
-# ------------------------------
-# @app.get("/", tags=["Obrigatórios"])
-# def root():
-#     return {"message": "API Tech Challenge - FIAP"}
+# Autenticação JWT
+app.include_router(auth_router)

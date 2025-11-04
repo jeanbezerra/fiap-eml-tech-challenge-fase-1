@@ -1,10 +1,11 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException, Depends
+from fiap_eml_api.auth_jwt import get_current_user
 from data_base import get_connection, release_connection
 
 router = APIRouter(prefix="/stats", tags=["Opcionais"])
 
 @router.get("/categories", summary="Estatísticas detalhadas por categoria")
-def stats_by_category():
+def stats_by_category(current_user: str = Depends(get_current_user)):
     """
     Retorna estatísticas detalhadas por categoria:
     - Quantidade total de livros por categoria

@@ -16,4 +16,6 @@ src/fiap_eml_api/api_opcional_books_price_range.py
 src/fiap_eml_api/api_opcional_categories.py
 src/fiap_eml_api/api_opcional_overview.py
 src/fiap_eml_api/api_title_or_categorie.py
+src/fiap_eml_api/auth_jwt.py
 src/fiap_eml_api/data_base.py
+src/fiap_eml_api/security_core.py

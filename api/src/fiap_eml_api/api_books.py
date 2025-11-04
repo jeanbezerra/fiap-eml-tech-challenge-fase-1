@@ -1,11 +1,12 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
+from fiap_eml_api.auth_jwt import get_current_user
 from data_base import get_connection, release_connection
 import psycopg2
 
 router = APIRouter()
 
 @router.get("/books", summary="Listar todos os livros disponíveis")
-def listar_todos_os_livros():
+def listar_todos_os_livros(current_user: str = Depends(get_current_user)):
     """
     Retorna todos os livros armazenados no banco de dados, ordenados pela data de coleta mais recente.
     """
@@ -26,7 +27,11 @@ def listar_todos_os_livros():
         columns = [desc[0] for desc in cursor.description]
         livros = [dict(zip(columns, row)) for row in rows]
 
-        return {"quantidade": len(livros), "livros": livros}
+        return {
+            "usuario": current_user,  # opcional — remove se não quiser mostrar
+            "quantidade": len(livros),
+            "livros": livros
+        }
 
     except psycopg2.Error as db_err:
         raise HTTPException(status_code=500, detail=f"Erro de banco de dados: {db_err}")
