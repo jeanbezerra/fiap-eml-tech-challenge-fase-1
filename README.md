@@ -149,26 +149,6 @@ A API está publicada no ambiente de produção através do Render como ambiente
 | **POST** | `/api/v1/auth/login`   | Gera um **Access Token (JWT)** a partir de credenciais válidas |
 | **POST** | `/api/v1/auth/refresh` | Gera um novo token JWT a partir de um Refresh Token            |
 
-
-
-## Autenticação JWT (Entregue)
-
-| Método | Rota                | Descrição |
-|-------:|---------------------|-----------|
-| POST   | `/api/v1/auth/login` | Geração de token JWT |
-
-Exemplo:
-```bash
-curl -X POST http://localhost:8000/api/v1/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{"username":"admin","password":"admin"}'
-```
-
-Requisições autenticadas:
-```bash
--H "Authorization: Bearer <token>"
-```
-
 ## Diagrama Arquitetural (C4 – Nível 3)
 
 Os arquivos se encontram em `/docs`.
@@ -177,6 +157,8 @@ O diagrama reflete:
 - Separação entre **API**, **Data Layer** e **Scraping**.
 - Fluxo de consulta e ingestão.
 - Expansão natural para **feature store** + pipelines de ML na próxima fase.
+
+
 
 ## Status da Entrega
 
