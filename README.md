@@ -1,374 +1,155 @@
-# Tech Challenge — API Pública de Livros (Fase 1: Machine Learning Engineering)
+# Tech Challenge — API Pública de Livros  
 
-> **Resumo:** Este repositório entrega um pipeline completo de **Web Scraping → Transformação → API pública** com foco em escalabilidade e reuso para projetos de **Machine Learning**. Inclui documentação das rotas, exemplos de requisições, instruções de instalação/execução e diretrizes para deploy público.
+**FIAP Pós-Graduação em Machine Learning Engineering – Fase 1**
+
+Este projeto entrega uma pipeline inicial para **obtenção e disponibilização de dados** visando uso futuro em modelos de Machine Learning.  
+Nesta fase, implementamos o fluxo completo:
+
+**Web Scraping → Tratamento → Persistência → API REST → Autenticação JWT → Desenho Arquitetural**
+
+## Membros do Grupo
+
+| Nome | RA | Função no Projeto |
+|------|----|------------------|
+| *(Preencher Integrante 1)* | *(RA)* | Desenvolvimento da API e modularização |
+| *(Preencher Integrante 2)* | *(RA)* | Web Scraping e tratamento de dados |
+| *(Preencher Integrante 3)* | *(RA)* | Persistência e camada de acesso aos dados |
+| *(Preencher Integrante 4)* | *(RA)* | Documentação, arquitetura e segurança (JWT) |
+
+
+## Objetivos da Fase
+
+1. Realizar **Web Scraping** do site público https://books.toscrape.com/.
+2. **Normalizar e armazenar** os dados coletados em **CSV**.
+3. Disponibilizar os dados por meio de uma **API REST** documentada com **Swagger/OpenAPI**.
+4. Implementar **autenticação JWT** para rotas protegidas.
+5. Entregar o **desenho arquitetural** do sistema (C4 — nível 3).
 
 ---
 
-## 🔭 Objetivos do Projeto
-
-- **Extrair** dados do site `https://books.toscrape.com/`.
-- **Persistir** os dados em **CSV** (e, opcionalmente, SQLite/PostgreSQL).
-- **Servir** os dados via **API RESTful** (FastAPI ou Flask) com documentação **Swagger/OpenAPI**.
-- **Facilitar** o consumo por cientistas de dados e pipelines de ML (endpoints de **features** e **training-data** opcionais).
-- **Preparar** o deploy público (Render/Heroku/Vercel/Fly.io etc).
-
----
-
-## 🧱 Arquitetura (Visão Macro)
+## Arquitetura da Solução
 
 ```
-[Web Scraping] --> [Camada de Dados] --> [API Pública] --> [Consumidores/Clients/ML]
-       |               |                     |                 |
-  scripts/             data/               api/             notebooks/ (opcional)
++------------------+       +------------------+       +----------------------+
+|  Web Scraping    | --->  |  Camada de Dados | --->  |      API Pública     |
+| (scripts/)       |       | (CSV / DB)       |       | (FastAPI + JWT)      |
++------------------+       +------------------+       +----------------------+
+                                                         |
+                                                         v
+                                                 Consumidores / ML Pipelines
 ```
 
-- **Web Scraping:** Coleta robusta de todos os livros (título, preço, rating, disponibilidade, categoria, imagem).
-- **Transformação:** Normalização/limpeza + gravação em CSV (ex.: `data/books.csv`).
-- **API:** Endpoints REST para listar/consultar livros, categorias, estatísticas e saúde da aplicação.
-- **Escalabilidade futura:** Separação em módulos, logs estruturados, autenticação (JWT) e endpoints ML-ready (opcionais).
+- **Scraping:** coleta título, categoria, preço, rating e disponibilidade.
+- **Data Layer:** persistência local em CSV (expansível para PostgreSQL).
+- **API:** disponibilização dos dados com filtros e busca.
+- **JWT:** rotas de administração acessíveis apenas com token.
 
-> Um diagrama C4/fluxo pode ser incluído em `docs/architecture.png`. Gere com PlantUML/Mermaid e referencie abaixo em **Arquitetura Visual**.
+Diagramas (entregues nesta fase):  
+```
+/docs/arquitetura-atual-c4-nivel-3.png
+/docs/arquitetura-atual-c4-nivel-3.svg
+```
 
----
-
-## 📁 Estrutura de Pastas
+## Estrutura do Projeto
 
 ```
 .
 ├── api/
-│   ├── api_main.py                         # Entrypoint principal da API
-│   ├── api_books.py                        # Endpoint: listar livros
-│   ├── api_id_book_core.py                 # Endpoint: detalhes por ID
-│   ├── api_title_or_categorie.py           # Endpoint: busca por título/categoria
-│   ├── api_Categories.py                   # Endpoint: categorias
-│   ├── api_health_core.py                  # Endpoint: health check
-│   ├── api_opcional_overview.py            # Endpoint opcional: estatísticas gerais
-│   ├── api_opcional_categories.py          # Endpoint opcional: estatísticas por categoria
-│   ├── api_opcional_books_top_rated.py     # Endpoint opcional: livros com melhor rating
-│   ├── api_opcional_books_price_range.py   # Endpoint opcional: filtro por faixa de preço
-│   └── data_base.py                        # Conexão com banco de dados (opcional)
+│   ├── api_main.py                         # Entrypoint da API
+│   ├── api_books.py                        # Listagem e filtros de livros
+│   ├── api_categories.py                   # Categorias disponíveis
+│   ├── api_id_book_core.py                 # Detalhe por ID
+│   ├── api_title_or_categorie.py           # Busca refinada
+│   ├── api_health_core.py                  # Health Check
+│   ├── api_auth_jwt.py                     # Login e autenticação JWT
+│   └── data_base.py                        # Adaptação de acesso a dados (DB opcional)
 │
 ├── scripts/
-│   └── scrape_books.py                     # Script de scraping automatizado
+│   └── scrape_books.py                     # Coleta automatizada
 │
 ├── data/
-│   └── books_to_scrape.csv                 # Base local com os dados extraídos
+│   └── books_to_scrape.csv                 # Base local gerada
 │
-├── README.md
+├── docs/
+│   └── arquitetura-atual-c4-nivel-3.png
+│   └── arquitetura-atual-c4-nivel-3.svg
+│
 ├── pyproject.toml
-└── uv.lock
-
+└── README.md
 ```
 
-## ⚙️ Instalação & Configuração
+## Instalação e Execução
 
-### Opção A) Ambiente Local (Python moderno com `uv` ou `pip`)
-> Requer **Python 3.11+**.
+### Requisitos
+- Python 3.13
+- Gerenciamento de Dependencias `uv`
 
-**Com `uv` (recomendado):**
+### Instalar dependências
 ```bash
-# Instalar uv (Windows PowerShell)
-# powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
-
-# Instalar dependências (gera venv automaticamente)
 uv sync
-
-# Ativar ambiente (se necessário)
-# Linux/MacOS:
-source .venv/bin/activate
-# Windows (PowerShell):
-.venv\Scripts\Activate.ps1
 ```
 
-**Com `pip`:**
+### Executar API
 ```bash
-python -m venv .venv
-# Linux/MacOS:
-source .venv/bin/activate
-# Windows (PowerShell):
-.venv\Scripts\Activate.ps1
-
-pip install -r requirements.txt
-```
-
-**Variáveis de Ambiente (`.env`)**
-```
-# Copie .env.example para .env e ajuste conforme necessário
-DATA_FILE_PATH=data/books.csv
-API_TITLE=Books API
-API_VERSION=v1
-ENABLE_AUTH=false          # true para JWT (bônus)
-SECRET_KEY=change-me       # necessário se ENABLE_AUTH=true
-ACCESS_TOKEN_EXPIRE_MIN=30
-```
-
----
-
-## 🕷️ Web Scraping
-
-**Execução (local):**
-```bash
-# Via Makefile
-make scrape
-# ou diretamente
-python scripts/scrape_books.py --out data/books.csv --images false
-```
-
-**Parâmetros comuns:**
-- `--out`: caminho do CSV (default: `data/books.csv`)
-- `--images`: baixa imagens? (`true/false`, default: `false`)
-
-**Schema do CSV (sugerido):**
-```csv
-id,title,price,rating,availability,category,image_url,product_page_url
-```
-
----
-
-## 🚀 Execução da API
-
-### FastAPI (com uv)
-```bash
-# Executar localmente com hot reload
 uv run uvicorn api.api_main:app --reload
-
 ```
 
-- **Documentação Swagger**: `http://localhost:8000/docs`
-- **OpenAPI JSON**: `http://localhost:8000/openapi.json`
+### Documentação (Swagger)
+```
+http://localhost:8000/docs
+```
 
-📦 As APIs foram modularizadas em arquivos separados dentro de api/, mantendo uma arquitetura mais escalável e limpa.
----
+## Endpoints Principais
 
-## 🔌 Endpoints da API (Core)
+| Método | Rota                                                | Descrição |
+|-------:|-----------------------------------------------------|-----------|
+| GET    | `/api/v1/health`                                    | Status da API |
+| GET    | `/api/v1/books`                                     | Lista paginada de livros |
+| GET    | `/api/v1/books/{id}`                                | Detalhe por ID |
+| GET    | `/api/v1/books/search?title=&category=`             | Busca refinada |
+| GET    | `/api/v1/categories`                                | Lista de categorias |
 
-| Método | Rota                                                | Descrição                                      |
-|-------:|-----------------------------------------------------|-----------------------------------------------|
-| GET    | `/api/v1/health`                                    | Verifica status da API e conectividade.       |
-| GET    | `/api/v1/books`                                     | Lista todos os livros. Suporta paginação.     |
-| GET    | `/api/v1/books/{id}`                                | Detalhes de um livro por ID.                  |
-| GET    | `/api/v1/books/search?title={t}&category={c}`       | Busca por título e/ou categoria.              |
-| GET    | `/api/v1/categories`                                | Lista categorias disponíveis.                  |
+## Autenticação JWT (Entregue)
 
-### Exemplos (cURL)
+| Método | Rota                | Descrição |
+|-------:|---------------------|-----------|
+| POST   | `/api/v1/auth/login` | Geração de token JWT |
 
+Exemplo:
 ```bash
-# Health
-curl -s http://localhost:8000/api/v1/health
-
-# Listar livros (primeira página)
-curl -s "http://localhost:8000/api/v1/books?page=1&size=50"
-
-# Detalhe por ID
-curl -s http://localhost:8000/api/v1/books/BOOK_000123
-
-# Busca por título e categoria
-curl -s "http://localhost:8000/api/v1/books/search?title=travel&category=Travel"
-
-# Categorias
-curl -s http://localhost:8000/api/v1/categories
+curl -X POST http://localhost:8000/api/v1/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"username":"admin","password":"admin"}'
 ```
 
----
-
-## 📊 Endpoints Opcionais (Insights)
-
-| Método | Rota                                      | Descrição                                                     |
-|-------:|-------------------------------------------|--------------------------------------------------------------|
-| GET    | `/api/v1/stats/overview`                  | Estatísticas gerais (total, preço médio, dist. de ratings).  |
-| GET    | `/api/v1/stats/categories`                | Estatísticas por categoria (qtde, preços).                   |
-| GET    | `/api/v1/books/top-rated`                 | Livros com melhor avaliação (rating mais alto).              |
-| GET    | `/api/v1/books/price-range?min=&max=`     | Filtra livros por faixa de preço.                            |
-
-### Exemplos (cURL)
+Requisições autenticadas:
 ```bash
-curl -s http://localhost:8000/api/v1/stats/overview
-curl -s http://localhost:8000/api/v1/stats/categories
-curl -s http://localhost:8000/api/v1/books/top-rated
-curl -s "http://localhost:8000/api/v1/books/price-range?min=10&max=25"
+-H "Authorization: Bearer <token>"
 ```
 
----
+## Diagrama Arquitetural (C4 – Nível 3)
 
-## 🔐 (Bônus) Autenticação JWT
+Os arquivos se encontram em `/docs`.
 
-- **Login:** `POST /api/v1/auth/login` → retorna `access_token`.
-- **Refresh:** `POST /api/v1/auth/refresh`.
-- **Proteção de rotas de admin** (ex.: `/api/v1/scraping/trigger`).
+O diagrama reflete:
+- Separação entre **API**, **Data Layer** e **Scraping**.
+- Fluxo de consulta e ingestão.
+- Expansão natural para **feature store** + pipelines de ML na próxima fase.
 
-### Exemplo (cURL)
-```bash
-# Login
-curl -s -X POST http://localhost:8000/api/v1/auth/login   -H "Content-Type: application/json"   -d '{"username":"admin","password":"admin"}'
+## Status da Entrega
 
-# Requisição autenticada
-curl -s http://localhost:8000/api/v1/scraping/trigger   -H "Authorization: Bearer <ACCESS_TOKEN>"
-```
+| Item | Status |
+|------|:------:|
+| Web Scraping funcionando | OK |
+| CSV gerado e persistido | OK |
+| API REST documentada | OK |
+| Autenticação JWT | OK |
+| Diagrama Arquitetural C4 N3 | OK |
 
----
+## Próxima Fase (Fase 2 — ML)
 
-## 🤖 (Bônus) Endpoints ML-Ready
-
-- `GET /api/v1/ml/features` → dados prontos para features de modelos.
-- `GET /api/v1/ml/training-data` → dataset de treinamento (CSV/JSON).
-- `POST /api/v1/ml/predictions` → recebe payload e retorna predições.
-
-> Padronize contratos para facilitar experimentação e MLOps (versione schemas).
-
----
-
-## 📈 (Bônus) Monitoramento & Analytics
-
-- **Logs estruturados** (JSON) por request/response.
-- **Métricas** de latência, throughput, status code (ex.: Prometheus + Grafana).
-- **Dashboard simples** (ex.: Streamlit) para visualização do uso.
-
----
-
-## 🧪 Testes
-
-```bash
-# Testes unitários
-make test
-# ou
-pytest -q
-```
-
----
-
-## 🐳 Docker (opcional)
-
-```bash
-# Build
-docker build -t books-api:latest .
-
-# Run
-docker run -p 8000:8000 --env-file .env books-api:latest
-```
-
----
-
-## 🌐 Deploy Público
-
-- **Plataformas sugeridas:** Render, Fly.io, Railway, Vercel (serverless), Heroku.
-- **Checklist:**
-  - Defina variáveis de ambiente (vide `.env.example`).
-  - Ajuste o `start` da API (Uvicorn/Gunicorn).
-  - Anexe persistência (se usar DB) ou gere `books.csv` no build/cron.
-
-**Link do Deploy:** _adicione aqui após publicar_
-
----
-
-## 🎬 Vídeo de Apresentação (3–12 min)
-
-Inclua:
-- Visão da **arquitetura** e **pipeline**.
-- Demonstração do **scraping** e **API em produção** (chamadas reais).
-- Comentários sobre **boas práticas** implementadas.
-
-**Link do Vídeo:** _adicione aqui_
-
----
-
-## 🗺️ Arquitetura Visual
-
-> Adicione aqui uma imagem/diagrama (ex.: `docs/architecture.png`) descrevendo:
-- Pipeline **ingestão → processamento → API → consumo**.
-- Componentes para **escalabilidade** (fila/cache/DB/observabilidade).
-- Integração futura com **modelos de ML** (features store/serving).
-
----
-
-## 📌 Entregáveis Requeridos (Checklist)
-
-- [x] Repositório organizado (`scripts/`, `api/`, `data/`, etc.)
-- [x] README completo (este arquivo)
-- [x] Script de scraping funcional → **CSV** gerado
-- [x] API RESTful (Flask/FastAPI) + **Swagger**
-- [x] Deploy público com link funcional
-- [ ] Plano arquitetural (diagrama ou doc)
-- [ ] Vídeo de apresentação (3–12 min)
-
-> **Plus (10 pts):** concluir **Beginner: Introduction to Generative AI Learning Path** (Google Cloud Skill Boost) e anexar comprovante.
-
-
-## Arquitetura — 
-
-### Padrão C4 nível 3 (Componentes)
-
-Visualizações:
-- PNG (preview rápido): ![Arquitetura atual – C4 Nível 3](./docs/arquitetura-atual-c4-nivel-3.png)
-- SVG (vetorial p/ zoom e impressão): ![Arquitetura atual – C4 Nível 3](./docs/arquitetura-atual-c4-nivel-3.svg)
-
-### O que o diagrama mostra
-
-O diagrama apresenta os componentes internos da solução (nível 3 do C4), destacando:
-- O container da API (FastAPI/Uvicorn) e seus routers de domínio.
-- O adaptador de acesso a dados (psycopg2) e o PostgreSQL.
-- O pipeline ETL (coleta → CSV → carga em banco), orquestrado por GitHub Actions.
-- As dependências externas: Render (hospedagem) e books.toscrape.com (fonte pública de dados).
-
-### Principais componentes
-
-**Pessoa / Atores**
-- **Usuário (Dev/Analista)** — Consome a API para consultas, filtros e diagnósticos (ex.: health check).
-
-**Container: API (FastAPI + Uvicorn)**
-- **`api_main.py`** — Ponto de entrada do app. Registra e expõe os routers.
-- **Routers** (separação por responsabilidade, aderente a REST):
-  - `api_books.py` — Endpoints de livros (listagem, busca, filtros).
-  - `api_categories.py` — Endpoints de categorias (ex.: lista de categorias).
-  - `api_id_book_core.py` — Detalhe de livro por **ID**.
-  - `api_opcional_books_price_range.py` — **Filtro por faixa de preço** (`min_price`/`max_price`).
-  - `api_opcional_books_best_rated.py` — Ordenação por **melhor avaliação**.
-  - `api_opcional_overview.py` — Indicadores/visão geral (KPI).
-  - `api_title_or_categorie.py` — Busca por **título** e/ou **categoria**.
-  - `api_health_core.py` — **Health check** (readiness/liveness).
-- **Acesso a dados**
-  - `data_base.py` — **PostgresAdapter** centraliza conexões/execução SQL via **psycopg2**.
-
-**Banco de Dados**
-- **PostgreSQL** — Tabela principal `public.book_scraping_data` (campos como `title`, `book_url`, `category`, `price`, `availability`, `rating`, `image_url`, `collected_at`).
-
-**ETL (Scripts)**
-- `scrape_books.py` — **Coleta** do site público (Requests + BeautifulSoup) e **gera CSV**.
-- `save_books_to_postgres.py` — **Limpa** a tabela e **insere** os registros do CSV em lote (`execute_batch`).
-
-**Sistemas Externos**
-- **books.toscrape.com** — Fonte pública de livros para scraping.
-- **GitHub Actions** — Orquestra a execução dos scripts (manual e/ou por push na `main`).
-- **Render** — **Hospeda** o processo FastAPI/Uvicorn em produção.
-
-### Fluxos principais
-
-1. **Consulta via API**  
-   Usuário → `api_main.py` → Router (ex.: `api_books.py`) → `data_base.py` → PostgreSQL → resposta JSON.
-
-2. **Filtros e leitura**  
-   - Filtro de **preço**: `api_opcional_books_price_range.py` executa `WHERE price BETWEEN ...`.
-   - **Categorias**: `api_categories.py` executa `SELECT DISTINCT category`.
-   - **Detalhe por ID**: `api_id_book_core.py` faz `SELECT ... WHERE id = ...`.
-   - **Best rated**: `api_opcional_books_best_rated.py` ordena por `rating DESC`.
-
-3. **Health check**  
-   `api_health_core.py` valida disponibilidade da API e, opcionalmente, conectividade ao banco.
-
-4. **Pipeline ETL**  
-   GitHub Actions → `scrape_books.py` (coleta + CSV) → `save_books_to_postgres.py`
-   (limpa a tabela e realiza **insert em lote**) → PostgreSQL.
-
-5. **Hospedagem/Deploy**  
-   Render executa o app com `uv run uvicorn ...` usando dependências resolvidas via `uv sync`.
-
-### Limites e acoplamentos (visão C4)
-
-- **API** e **ETL** são **containers** distintos (responsabilidades separadas).
-- Os **routers** **não** conhecem SQL diretamente; todo acesso ao banco passa pelo **PostgresAdapter** (`data_base.py`).
-- Integrações externas (**Render**, **GitHub Actions**, **books.toscrape.com**) ficam fora do boundary do sistema, conectadas por contratos simples (HTTP/CSV/SQL).
-
-### Observações de design
-
-- **Segurança de credenciais**: variáveis de ambiente (Render Secrets / GitHub Secrets).
-- **Resiliência**: insert em lote com tratamento de preço (Decimal), limpeza de tabela antes da carga (quando desejado).
-- **Evolução**: novos endpoints devem seguir o padrão dos routers (coeso, com acesso a dados via adapter).
+- Análise exploratória (EDA)
+- Feature Engineering
+- Treinamento e avaliação de modelos
+- Versionamento de datasets e modelos
+- Pipeline de inferência (serving)
