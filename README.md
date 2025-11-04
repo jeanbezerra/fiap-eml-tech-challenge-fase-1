@@ -52,6 +52,8 @@ Diagramas (entregues nesta fase):
 
 ## Estrutura do Projeto
 
+### API
+
 ```
 api/
 ├── pyproject.toml
@@ -78,6 +80,17 @@ api/
         ├── api_opcional_categories.py             # Estatísticas por categoria
         ├── api_opcional_books_best_rated.py       # Livros com melhor avaliação
         └── api_opcional_books_price_range.py      # Filtro por faixa de preço
+```
+
+### Scripts / Scraping
+
+```
+scripts/
+├── data/                               # Diretório para armazenar a base gerada
+│   └── books_to_scrape.csv             # Arquivo CSV após o scraping (gerado em runtime)
+│
+├── scrape_books.py                     # Script de Web Scraping (BooksToScrape → CSV)
+└── save_books_to_postgres.py           # Script de carga (CSV → Banco) / opcional
 ```
 
 ## Instalação e Execução
