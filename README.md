@@ -123,13 +123,33 @@ A API está publicada no ambiente de produção através do Render como ambiente
 
 ## Endpoints Principais
 
-| Método | Rota                                                | Descrição |
-|-------:|-----------------------------------------------------|-----------|
-| GET    | `/api/v1/health`                                    | Status da API |
-| GET    | `/api/v1/books`                                     | Lista paginada de livros |
-| GET    | `/api/v1/books/{id}`                                | Detalhe por ID |
-| GET    | `/api/v1/books/search?title=&category=`             | Busca refinada |
-| GET    | `/api/v1/categories`                                | Lista de categorias |
+### Obrigatórios
+
+|  Método | Rota                                     | Descrição                                             |
+| :-----: | ---------------------------------------- | ----------------------------------------------------- |
+| **GET** | `/api/v1/books/categories`               | Lista todas as categorias disponíveis                 |
+| **GET** | `/api/v1/books/id/{book_id}`             | Busca livro por **ID** (formato UUID ou hash interno) |
+| **GET** | `/api/v1/books/filters?title=&category=` | Lista livros filtrando por título e/ou categoria      |
+| **GET** | `/api/v1/health`                         | Verifica se a API está ativa (Health Check)           |
+| **GET** | `/api/v1/books`                          | Lista todos os livros disponíveis (com paginação)     |
+
+### Opcionais
+
+|  Método | Rota                                  | Descrição                                                                                     |
+| :-----: | ------------------------------------- | --------------------------------------------------------------------------------------------- |
+| **GET** | `/api/v1/stats/overview`              | Exibe estatísticas gerais da coleção (média de preço, média de rating, total de livros, etc.) |
+| **GET** | `/api/v1/stats/categories`            | Estatísticas agregadas por categoria (ex.: contagem de livros, preço médio)                   |
+| **GET** | `/api/v1/books/best-rated`            | Lista livros com **melhor avaliação** (rating mais alto)                                      |
+| **GET** | `/api/v1/books/price-range?min=&max=` | Lista livros filtrando por **faixa de preço** (min/max)                                       |
+
+### Autenticação (JWT)
+
+|  Método  | Rota                   | Descrição                                                      |
+| :------: | ---------------------- | -------------------------------------------------------------- |
+| **POST** | `/api/v1/auth/login`   | Gera um **Access Token (JWT)** a partir de credenciais válidas |
+| **POST** | `/api/v1/auth/refresh` | Gera um novo token JWT a partir de um Refresh Token            |
+
+
 
 ## Autenticação JWT (Entregue)
 
