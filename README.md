@@ -154,11 +154,12 @@ A API está publicada no ambiente de produção através do Render como ambiente
 Os arquivos se encontram em `/docs`.
 
 O diagrama reflete:
-- Separação entre **API**, **Data Layer** e **Scraping**.
-- Fluxo de consulta e ingestão.
-- Expansão natural para **feature store** + pipelines de ML na próxima fase.
+- Separação entre **API**, **Data Layer** e **Scraping**;
+- Fluxo de consulta e ingestão;
+- Estrutura completa da solução com detalhes;
+- Visão no padrão C4 Model com nível 3 de componentes.
 
-
+![Arquitetura Atual — C4 Nível 3](./docs/arquitetura-atual-c4-nivel-3.svg)
 
 ## Status da Entrega
 
