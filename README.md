@@ -9,7 +9,7 @@ Nesta fase, implementamos o fluxo completo:
 
 ## Membros do Grupo
 
-| Nome | RA | Função no Projeto |
+| Nome | RM | Função no Projeto |
 |------|----|------------------|
 | *Sofia Couto Freitas* | *RM369009* | Desenvolvimento da API e Otimização |
 | *Jean Carlos Bezerra Macena da Silva* | *RM367282* | Web Scraping, tratamento de dados e DevOps |
