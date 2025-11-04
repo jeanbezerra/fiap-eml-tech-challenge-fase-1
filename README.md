@@ -1,6 +1,6 @@
-# Tech Challenge - API Pública de Livros  
+# Tech Challenge - API Pública de Livros
 
-**FIAP Pós-Graduação em Machine Learning Engineering – Fase 1**
+**FIAP Pós-Graduação em Machine Learning Engineering – Fase 1 - Grupo 108**
 
 Este projeto entrega uma pipeline inicial para **obtenção e disponibilização de dados** visando uso futuro em modelos de Machine Learning.  
 Nesta fase, implementamos o fluxo completo:
@@ -11,11 +11,10 @@ Nesta fase, implementamos o fluxo completo:
 
 | Nome | RA | Função no Projeto |
 |------|----|------------------|
-| *(Preencher Integrante 1)* | *(RA)* | Desenvolvimento da API e modularização |
-| *(Preencher Integrante 2)* | *(RA)* | Web Scraping e tratamento de dados |
-| *(Preencher Integrante 3)* | *(RA)* | Persistência e camada de acesso aos dados |
-| *(Preencher Integrante 4)* | *(RA)* | Documentação, arquitetura e segurança (JWT) |
-
+| *Sofia Couto Freitas* | *RM369009* | Desenvolvimento da API e Otimização |
+| *Jean Carlos Bezerra Macena da Silva* | *RM367282* | Web Scraping, tratamento de dados e DevOps |
+| *Veronica Nunes Garcia* | *RM367804* | Persistência e camada de acesso aos dados & Desenvolvimento da API |
+| *Gabriel Lucas Mendes Comenale* | *RM367075* | Documentação, arquitetura e segurança (JWT) |
 
 ## Objetivos da Fase
 
