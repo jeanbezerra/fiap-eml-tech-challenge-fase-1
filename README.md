@@ -171,10 +171,6 @@ O diagrama reflete:
 | Autenticação JWT | OK |
 | Diagrama Arquitetural C4 N3 | OK |
 
-## Próxima Fase (Fase 2 — ML)
+## Demonstração e Explicação:
 
-- Análise exploratória (EDA)
-- Feature Engineering
-- Treinamento e avaliação de modelos
-- Versionamento de datasets e modelos
-- Pipeline de inferência (serving)
+- 
